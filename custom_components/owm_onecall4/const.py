@@ -35,6 +35,8 @@ MINUTELY_INTERVAL = timedelta(minutes=3)
 CURRENT_INTERVAL = timedelta(minutes=5)
 HOURLY_INTERVAL = timedelta(minutes=30)
 DAILY_INTERVAL = timedelta(minutes=60)
+# After a failed fetch, try that part again after this time at the latest.
+RETRY_INTERVAL = timedelta(minutes=5)
 
 # Stop fetching for the rest of the local day at this many calls.
 # Leaves room below 1000 for restarts and retries.
