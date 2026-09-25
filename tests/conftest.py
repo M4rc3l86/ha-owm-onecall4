@@ -89,10 +89,26 @@ def daily() -> dict:
     }
 
 
+def minutely(rain_from: int | None = 10) -> dict:
+    """60 minutes, with 1.2 mm/h of rain from minute `rain_from` on."""
+    now = _now() // 60 * 60
+    return {
+        "timezone": "Europe/Berlin",
+        "data": [
+            {
+                "dt": now + i * 60,
+                "precipitation": 1.2 if rain_from is not None and i >= rain_from else 0,
+            }
+            for i in range(60)
+        ],
+    }
+
+
 @pytest.fixture
 def mock_api(aioclient_mock):
-    """Mock all three One Call 4.0 endpoints."""
+    """Mock all four One Call 4.0 endpoints."""
     aioclient_mock.get(f"{API_BASE}/current", json=CURRENT)
     aioclient_mock.get(f"{API_BASE}/timeline/1h", json=hourly())
     aioclient_mock.get(f"{API_BASE}/timeline/1day", json=daily())
+    aioclient_mock.get(f"{API_BASE}/timeline/1min", json=minutely())
     return aioclient_mock
