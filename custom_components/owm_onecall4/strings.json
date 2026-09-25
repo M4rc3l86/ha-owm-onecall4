@@ -19,5 +19,18 @@
     "abort": {
       "already_configured": "This location is already configured."
     }
+  },
+  "entity": {
+    "sensor": {
+      "rain_next_hour": {
+        "name": "Rain next hour"
+      },
+      "rain_starts_in": {
+        "name": "Rain starts in"
+      },
+      "api_calls_today": {
+        "name": "API calls today"
+      }
+    }
   }
 }

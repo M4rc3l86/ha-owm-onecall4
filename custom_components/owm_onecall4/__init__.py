@@ -14,7 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import OneCallClient
 from .coordinator import OneCallConfigEntry, OneCallCoordinator
 
-PLATFORMS = [Platform.WEATHER]
+PLATFORMS = [Platform.SENSOR, Platform.WEATHER]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: OneCallConfigEntry) -> bool:
@@ -27,6 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: OneCallConfigEntry) -> b
         hass.config.language,
     )
     coordinator = OneCallCoordinator(hass, entry, client)
+    await coordinator.async_load_call_counter()
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -35,4 +36,5 @@ async def async_setup_entry(hass: HomeAssistant, entry: OneCallConfigEntry) -> b
 
 async def async_unload_entry(hass: HomeAssistant, entry: OneCallConfigEntry) -> bool:
     """Unload a config entry."""
+    await entry.runtime_data.async_save_call_counter()
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

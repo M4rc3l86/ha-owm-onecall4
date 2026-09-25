@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import aiohttp
 
-from .const import API_BASE, DAILY_COUNT, HOURLY_COUNT
+from .const import API_BASE, DAILY_COUNT, HOURLY_COUNT, HOURLY_PAGES
 
 REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=20)
 
@@ -25,10 +24,11 @@ class OneCallAuthError(OneCallError):
 class OneCallData:
     """Result of one update."""
 
-    current: dict[str, Any]
-    hourly: list[dict[str, Any]]
-    daily: list[dict[str, Any]]
-    timezone: str | None
+    current: dict[str, Any] = field(default_factory=dict)
+    hourly: list[dict[str, Any]] = field(default_factory=list)
+    daily: list[dict[str, Any]] = field(default_factory=list)
+    minutely: list[dict[str, Any]] = field(default_factory=list)
+    timezone: str | None = None
 
 
 class OneCallClient:
@@ -78,21 +78,28 @@ class OneCallClient:
         return body
 
     async def async_get_current(self) -> dict[str, Any]:
-        """Fetch only the current weather (1 call). Used to validate the key."""
+        """Fetch the current weather (1 call)."""
         return await self._get("current")
 
-    async def async_get_all(self) -> OneCallData:
-        """Fetch current, hourly and daily data (3 calls)."""
-        current, hourly, daily = await asyncio.gather(
-            self._get("current"),
-            self._get("timeline/1h", cnt=HOURLY_COUNT),
-            self._get("timeline/1day", cnt=DAILY_COUNT),
-        )
-        if not current["data"]:
-            raise OneCallError("No current weather in response")
-        return OneCallData(
-            current=current["data"][0],
-            hourly=hourly["data"],
-            daily=daily["data"],
-            timezone=current.get("timezone"),
-        )
+    async def async_get_hourly(self) -> list[dict[str, Any]]:
+        """Fetch HOURLY_PAGES pages of the hourly timeline (1 call per page)."""
+        records: list[dict[str, Any]] = []
+        start: int | None = None
+        for _ in range(HOURLY_PAGES):
+            extra: dict[str, Any] = {"cnt": HOURLY_COUNT}
+            if start is not None:
+                extra["start"] = start
+            page = (await self._get("timeline/1h", **extra))["data"]
+            records.extend(page)
+            if len(page) < HOURLY_COUNT or "dt" not in page[-1]:
+                break
+            start = page[-1]["dt"] + 3600
+        return records
+
+    async def async_get_daily(self) -> list[dict[str, Any]]:
+        """Fetch the daily timeline (1 call)."""
+        return (await self._get("timeline/1day", cnt=DAILY_COUNT))["data"]
+
+    async def async_get_minutely(self) -> list[dict[str, Any]]:
+        """Fetch the precipitation for the next 60 minutes (1 call)."""
+        return (await self._get("timeline/1min"))["data"]

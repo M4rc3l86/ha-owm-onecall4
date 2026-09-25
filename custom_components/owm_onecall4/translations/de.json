@@ -19,5 +19,18 @@
     "abort": {
       "already_configured": "Dieser Ort ist schon eingerichtet."
     }
+  },
+  "entity": {
+    "sensor": {
+      "rain_next_hour": {
+        "name": "Regen nächste Stunde"
+      },
+      "rain_starts_in": {
+        "name": "Regen beginnt in"
+      },
+      "api_calls_today": {
+        "name": "API-Abrufe heute"
+      }
+    }
   }
 }
