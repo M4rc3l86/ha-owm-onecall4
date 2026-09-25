@@ -8,7 +8,7 @@ The core `openweathermap` integration only supports One Call 3.0
 ## Features
 
 - Current weather (temperature, feels like, humidity, pressure, wind, gusts, clouds, UV, visibility, dew point)
-- Hourly forecast (next 60 hours)
+- Hourly forecast (next 48 hours, the API gives no more)
 - Daily forecast (8 days)
 - Rain nowcast sensors from the minute timeline:
   - `Rain next hour` (mm, the minute list is in the `forecast` attribute)
