@@ -72,7 +72,7 @@ class OneCallClient:
                         f"HTTP {resp.status}: {body.get('message', 'unknown error')}"
                     )
         except (aiohttp.ClientError, TimeoutError) as err:
-            raise OneCallError(f"Connection error: {err}") from err
+            raise OneCallError(f"Connection error: {err!r}") from err
         if not isinstance(body, dict) or not isinstance(body.get("data"), list):
             raise OneCallError("Unexpected response format")
         return body

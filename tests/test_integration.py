@@ -218,3 +218,26 @@ async def test_hourly_uses_three_pages(hass: HomeAssistant, aioclient_mock) -> N
     assert len(hourly_urls) == 3
     assert "start" not in hourly_urls[0].query
     assert int(hourly_urls[1].query["start"]) == full_page["data"][-1]["dt"] + 3600
+
+
+async def test_failed_part_retries_after_five_minutes(
+    hass: HomeAssistant, aioclient_mock, freezer
+) -> None:
+    aioclient_mock.get(f"{API_BASE}/current", json=CURRENT)
+    aioclient_mock.get(f"{API_BASE}/timeline/1h", json=hourly())
+    aioclient_mock.get(f"{API_BASE}/timeline/1day", exc=TimeoutError())
+    aioclient_mock.get(f"{API_BASE}/timeline/1min", json=minutely())
+    entry = await _setup(hass)
+    assert entry.runtime_data.data.daily == []
+
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(f"{API_BASE}/current", json=CURRENT)
+    aioclient_mock.get(f"{API_BASE}/timeline/1h", json=hourly())
+    aioclient_mock.get(f"{API_BASE}/timeline/1day", json=daily())
+    aioclient_mock.get(f"{API_BASE}/timeline/1min", json=minutely())
+    for _ in range(5):
+        freezer.tick(timedelta(minutes=1))
+        async_fire_time_changed(hass)
+        await hass.async_block_till_done()
+    assert "timeline/1day" in _paths(aioclient_mock)
+    assert len(entry.runtime_data.data.daily) == 2

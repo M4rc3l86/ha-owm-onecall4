@@ -22,6 +22,7 @@ from .const import (
     HOURLY_INTERVAL,
     HOURLY_PAGES,
     MINUTELY_INTERVAL,
+    RETRY_INTERVAL,
     TICK_INTERVAL,
 )
 
@@ -130,6 +131,8 @@ class OneCallCoordinator(DataUpdateCoordinator[OneCallData]):
                 ) from err
             except OneCallError as err:
                 errors.append(f"{name}: {err}")
+                # Do not wait a full interval (up to 60 min) without data.
+                self._next_fetch[name] = now + min(interval, RETRY_INTERVAL)
 
         if fetched:
             self._store.async_delay_save(self._counter_data, SAVE_DELAY)
