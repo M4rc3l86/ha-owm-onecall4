@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "OpenWeatherMap One Call 4.0",
+        "description": "Braucht einen API-Key mit aktivem One Call 4.0 Abo.",
+        "data": {
+          "name": "Name",
+          "api_key": "API-Key",
+          "latitude": "Breitengrad",
+          "longitude": "Längengrad"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "API-Key abgelehnt. Prüfe, ob der Key ein aktives One Call 4.0 Abo hat (Aktivierung kann bis zu 2 Stunden dauern).",
+      "cannot_connect": "Keine Verbindung zu OpenWeatherMap."
+    },
+    "abort": {
+      "already_configured": "Dieser Ort ist schon eingerichtet."
+    }
+  }
+}

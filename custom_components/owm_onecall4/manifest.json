@@ -1,0 +1,12 @@
+{
+  "domain": "owm_onecall4",
+  "name": "OpenWeatherMap One Call 4.0",
+  "codeowners": ["@M4rc3l86"],
+  "config_flow": true,
+  "documentation": "https://github.com/M4rc3l86/ha-owm-onecall4",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/M4rc3l86/ha-owm-onecall4/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

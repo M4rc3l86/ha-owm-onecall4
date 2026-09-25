@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "OpenWeatherMap One Call 4.0",
+        "description": "Needs an API key with an active One Call 4.0 subscription.",
+        "data": {
+          "name": "Name",
+          "api_key": "API key",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "API key rejected. Check that the key has an active One Call 4.0 subscription (activation can take up to 2 hours).",
+      "cannot_connect": "Failed to connect to OpenWeatherMap."
+    },
+    "abort": {
+      "already_configured": "This location is already configured."
+    }
+  }
+}
